@@ -214,7 +214,9 @@ public:
 // ================================================================
 OcctQtViewer::OcctQtViewer(QWidget* theParent)
     : QOpenGLWidget(theParent), // Initialize the base class QOpenGLWidget with the parent widget
-    myIsCoreProfile(true)     // Initialize the core profile flag to true
+    myIsCoreProfile(true),     // Initialize the core profile flag to true
+    initWindowWidth(341),      // Initialize the initial window width
+    initWindowHeight(221)     // Initialize the initial window height
 {
     // Create a display connection for OCCT
     Handle(Aspect_DisplayConnection) aDisp = new Aspect_DisplayConnection();
@@ -271,6 +273,10 @@ OcctQtViewer::OcctQtViewer(QWidget* theParent)
     aGlFormat.setDepthBufferSize(24);      // Set depth buffer size to 24 bits
     aGlFormat.setStencilBufferSize(8);     // Set stencil buffer size to 8 bits
     aDriver->ChangeOptions().contextDebug = aGlFormat.testOption(QSurfaceFormat::DebugContext); // Set context debug option
+
+    // Set initial viewport size
+    QSize widgetSize = size();
+    resizeGL(widgetSize.width(), widgetSize.height());
 
     if (myIsCoreProfile)
     {
@@ -580,6 +586,17 @@ void OcctQtViewer::paintGL()
     FlushViewEvents(myContext, aView, true);
 }
 
+void OcctQtViewer::resizeGL(int w, int h)
+{
+    // Handle OpenGL viewport resizing
+    if (!myView.IsNull() && !myView->Window().IsNull())
+    {
+        myView->Window()->DoResize();
+        myView->MustBeResized();
+        myView->Redraw();
+    }
+}
+
 // ================================================================
 // Function : handleViewRedraw
 // Purpose  : Handle the view redraw event
@@ -604,4 +621,11 @@ void OcctQtViewer::OnSubviewChanged(const Handle(AIS_InteractiveContext)&,
     const Handle(V3d_View)& theNewView)
 {
     myFocusView = theNewView; // Update the focus view
+}
+
+
+void OcctQtViewer::setGeometryInfo(const QRect& rect)
+{
+    initWindowWidth = rect.width();
+    initWindowHeight = rect.height();
 }

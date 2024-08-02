@@ -31,8 +31,6 @@ int main(int theNbArgs, char** theArgVec)
 
     ExtrusionWizard mainWindow;
     mainWindow.show();
-
-
     
     return aQApp.exec(); // Enter the Qt event loop and start the application
 }

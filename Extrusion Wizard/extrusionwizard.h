@@ -5,6 +5,7 @@
 #include <QOpenGLWidget>
 #include <QVBoxLayout>
 #include "OcctQtViewer.h"
+#include "ui_extrusionwizard.h"
 
 class ExtrusionWizard : public QMainWindow
 {
@@ -15,9 +16,9 @@ public:
     ~ExtrusionWizard();
 
 private:
-    QOpenGLWidget* glWidget; // OpenGL widget
-    OcctQtViewer* occtViewer; // OCCT viewer
-    QVBoxLayout* layout; // Layout for the OpenGL widget
+    Ui::ExtrusionWizardClass ui; // UI object
+    OcctQtViewer* occtViewer = nullptr; // OCCT viewer
+    void initializeOcctViewer(); // Function to initialize OCCT viewer
 };
 
 #endif // EXTRUSIONWIZARD_H

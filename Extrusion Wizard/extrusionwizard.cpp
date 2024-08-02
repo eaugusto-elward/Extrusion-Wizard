@@ -2,22 +2,35 @@
 #include "extrusionwizard.h"
 
 ExtrusionWizard::ExtrusionWizard(QWidget* parent)
-    : QMainWindow(parent),
-    glWidget(new QOpenGLWidget(this)),
-    occtViewer(new OcctQtViewer(glWidget)),
-    layout(new QVBoxLayout(glWidget))
+    : QMainWindow(parent)
 {
-    // Set the layout for the OpenGL widget
-    layout->addWidget(occtViewer);
-    glWidget->setLayout(layout);
-
-    // Set the central widget of the main window to be the OpenGL widget
-    setCentralWidget(glWidget);
+    ui.setupUi(this);
+    initializeOcctViewer(); // Initialize the OCCT viewer after UI setup
 }
 
 ExtrusionWizard::~ExtrusionWizard()
 {
-    delete layout;
-    delete occtViewer;
-    delete glWidget;
+    delete occtViewer; // Safely delete occtViewer if it was created
+
+}
+
+
+void ExtrusionWizard::initializeOcctViewer()
+{
+    // Find the OpenGL widget by its object name
+    QOpenGLWidget* glWidget = this->findChild<QOpenGLWidget*>("glWidget");
+
+    if (glWidget)
+    {
+        // Initialize the OcctQtViewer with the OpenGL widget
+        occtViewer = new OcctQtViewer(glWidget);
+
+        // Set the geometry information for the viewer
+        occtViewer->setGeometryInfo(glWidget->geometry());
+
+    }
+    else
+    {
+        qDebug() << "OpenGL widget with name 'glWidget' not found.";
+    }
 }

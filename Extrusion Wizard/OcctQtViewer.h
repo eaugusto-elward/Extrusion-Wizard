@@ -57,10 +57,12 @@ public:
   const QString& getGlInfo() const { return myGlInfo; }
 
   //! Minial widget size.
-  virtual QSize minimumSizeHint() const override { return QSize(200, 200); }
+  virtual QSize minimumSizeHint() const override { return QSize(400, 400); }
 
   //! Default widget size.
-  virtual QSize sizeHint()        const override { return QSize(720, 480); }
+  virtual QSize sizeHint()        const override { return QSize(initWindowWidth, initWindowHeight); }
+
+  void setGeometryInfo(const QRect& rect);
 
 public:
 
@@ -73,7 +75,7 @@ protected: // OpenGL events
 
   virtual void initializeGL() override;
   virtual void paintGL() override;
-  //virtual void resizeGL(int , int ) override;
+  virtual void resizeGL(int w, int h) override;
 
 protected: // user input events
 
@@ -106,6 +108,8 @@ private:
 
   QString myGlInfo;
   bool myIsCoreProfile;
+
+  int initWindowWidth, initWindowHeight;    // Pulled from the QT geometry
 };
 
 #endif // _OcctQtViewer_HeaderFile
