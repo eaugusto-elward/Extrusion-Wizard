@@ -30,7 +30,13 @@ int main(int theNbArgs, char** theArgVec)
     QApplication aQApp(theNbArgs, theArgVec); // Initialize the Qt application with command-line arguments
 
     ExtrusionWizard mainWindow;
+    //mainWindow.resize(mainWindow.sizeHint());
     mainWindow.show();
     
     return aQApp.exec(); // Enter the Qt event loop and start the application
 }
+
+
+// List of TODO items:
+// *The link between the viewer object from the OCCT library and the OpenGL widget in the Qt application is not yet established in a reliable way. Everything is hardcoded
+//  by pixels rather than have variable resizing and scaling. This is a major issue that needs to be addressed.

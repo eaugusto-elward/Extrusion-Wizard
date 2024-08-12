@@ -60,9 +60,12 @@ public:
   virtual QSize minimumSizeHint() const override { return QSize(400, 400); }
 
   //! Default widget size.
-  virtual QSize sizeHint()        const override { return QSize(initWindowWidth, initWindowHeight); }
+  virtual QSize sizeHint()        const override { return QSize(720, 480); }
 
   void setGeometryInfo(const QRect& rect);
+
+signals:
+      void mousePositionChanged(double x, double y, double z);
 
 public:
 
@@ -75,7 +78,7 @@ protected: // OpenGL events
 
   virtual void initializeGL() override;
   virtual void paintGL() override;
-  virtual void resizeGL(int w, int h) override;
+  //virtual void resizeGL(int w, int h) override;
 
 protected: // user input events
 
@@ -97,6 +100,14 @@ private:
   //! Handle view redraw.
   virtual void handleViewRedraw (const Handle(AIS_InteractiveContext)& theCtx,
                                  const Handle(V3d_View)& theView) override;
+  //! Add a red 0 line to X axis.
+  void AddXAxisZeroLine(const Handle(AIS_InteractiveContext)& theContext);
+
+  //! Add a green 0 line to Y axis.
+  void AddYAxisZeroLine(const Handle(AIS_InteractiveContext)& theContext);
+
+  //! Add a Blue 0 line to X axis.
+  void AddZAxisZeroLine(const Handle(AIS_InteractiveContext)& theContext);
 
 private:
   Handle(V3d_Viewer)             myViewer;
@@ -110,6 +121,7 @@ private:
   bool myIsCoreProfile;
 
   int initWindowWidth, initWindowHeight;    // Pulled from the QT geometry
+  double gridX, gridY, gridZ;
 };
 
 #endif // _OcctQtViewer_HeaderFile

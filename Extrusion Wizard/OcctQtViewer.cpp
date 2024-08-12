@@ -32,6 +32,14 @@
 #include <Message.hxx>                 // Include for message handling
 #include <OpenGl_GraphicDriver.hxx>    // Include for graphic driver in OpenGL
 #include <OpenGl_FrameBuffer.hxx>      // Include for OpenGL frame buffer
+#include <Quantity_Color.hxx>
+#include <gp_Pnt.hxx>
+#include <gp_Dir.hxx>
+#include <AIS_Line.hxx>
+#include <Geom_CartesianPoint.hxx>
+#include <Geom_Line.hxx>
+
+
 
 // Anonymous namespace for utility functions
 namespace
@@ -215,8 +223,8 @@ public:
 OcctQtViewer::OcctQtViewer(QWidget* theParent)
     : QOpenGLWidget(theParent), // Initialize the base class QOpenGLWidget with the parent widget
     myIsCoreProfile(true),     // Initialize the core profile flag to true
-    initWindowWidth(341),      // Initialize the initial window width
-    initWindowHeight(221)     // Initialize the initial window height
+    initWindowWidth(720),      // Initialize the initial window width
+    initWindowHeight(480)     // Initialize the initial window height
 {
     // Create a display connection for OCCT
     Handle(Aspect_DisplayConnection) aDisp = new Aspect_DisplayConnection();
@@ -239,16 +247,25 @@ OcctQtViewer::OcctQtViewer(QWidget* theParent)
     myViewer->SetDefaultLights();                           // Set the default lights
     myViewer->SetLightOn();                                 // Turn the lights on
     myViewer->ActivateGrid(Aspect_GT_Rectangular, Aspect_GDM_Lines); // Activate a rectangular grid
+    
+    
+    
+
 
     // Create the AIS (Application Interactive Services) context
     myContext = new AIS_InteractiveContext(myViewer);
+    AddXAxisZeroLine(myContext);                             // Add a zero line for the X axis
+    AddYAxisZeroLine(myContext);                             // Add a zero line for the X axis
+    AddZAxisZeroLine(myContext);                             // Add a zero line for the X axis
+
 
     // Create a view cube for orientation and navigation
     myViewCube = new AIS_ViewCube();
     myViewCube->SetViewAnimation(myViewAnimation);         // Set view animation for the view cube
     myViewCube->SetFixedAnimationLoop(false);              // Disable fixed animation loop
     myViewCube->SetAutoStartAnimation(true);               // Enable auto-start animation
-    myViewCube->TransformPersistence()->SetOffset2d(Graphic3d_Vec2i(100, 150)); // Set 2D offset for the view cube
+    myViewCube->TransformPersistence()->SetOffset2d(Graphic3d_Vec2i(75, 75)); // Set 2D offset for the view cube
+    myViewCube->SetSize(50);                              // Set the size of the view cube
 
     // Note: The window will be created later within initializeGL() callback!
     myView = myViewer->CreateView();
@@ -275,6 +292,7 @@ OcctQtViewer::OcctQtViewer(QWidget* theParent)
     aDriver->ChangeOptions().contextDebug = aGlFormat.testOption(QSurfaceFormat::DebugContext); // Set context debug option
 
     // Set initial viewport size
+    // TODO: Look into this interaction with QT widgets. It doesn't seem like it is working correctly on my version
     QSize widgetSize = size();
     resizeGL(widgetSize.width(), widgetSize.height());
 
@@ -390,12 +408,12 @@ void OcctQtViewer::initializeGL()
         myContext->Display(myViewCube, 0, 0, false);
     }
 
-    {
-        // Create and display a dummy shape for testing
-        TopoDS_Shape aBox = BRepPrimAPI_MakeBox(100.0, 50.0, 90.0).Shape();
-        Handle(AIS_Shape) aShape = new AIS_Shape(aBox);
-        myContext->Display(aShape, AIS_Shaded, 0, false);
-    }
+    //{
+    //    // Create and display a dummy shape for testing
+    //    TopoDS_Shape aBox = BRepPrimAPI_MakeBox(100.0, 50.0, 90.0).Shape();
+    //    Handle(AIS_Shape) aShape = new AIS_Shape(aBox);
+    //    myContext->Display(aShape, AIS_Shaded, 0, false);
+    //}
 }
 
 // ================================================================
@@ -484,6 +502,11 @@ void OcctQtViewer::mouseMoveEvent(QMouseEvent* theEvent)
             false))
     {
         updateView(); // Update the view if mouse position is updated
+        // Convert screen position to grid coordinates
+        myView->ConvertToGrid(aNewPos.x(), aNewPos.y(), gridX, gridY, gridZ);
+
+        // Emit the grid coordinates instead of just the screen position
+        emit mousePositionChanged(gridX, gridY, gridZ);
     }
 }
 
@@ -586,16 +609,16 @@ void OcctQtViewer::paintGL()
     FlushViewEvents(myContext, aView, true);
 }
 
-void OcctQtViewer::resizeGL(int w, int h)
-{
-    // Handle OpenGL viewport resizing
-    if (!myView.IsNull() && !myView->Window().IsNull())
-    {
-        myView->Window()->DoResize();
-        myView->MustBeResized();
-        myView->Redraw();
-    }
-}
+//void OcctQtViewer::resizeGL(int w, int h)
+//{
+//    // Handle OpenGL viewport resizing
+//    if (!myView.IsNull() && !myView->Window().IsNull())
+//    {
+//        myView->Window()->DoResize();
+//        myView->MustBeResized();
+//        myView->Redraw();
+//    }
+//}
 
 // ================================================================
 // Function : handleViewRedraw
@@ -610,6 +633,104 @@ void OcctQtViewer::handleViewRedraw(const Handle(AIS_InteractiveContext)& theCtx
         // Request more frames for animation
         updateView();
     }
+}
+
+// ================================================================
+// Function : AddXAxisZeroLine
+// Purpose  : Create a red X axis line at Y = 0, Z = 0
+// ================================================================
+void OcctQtViewer::AddXAxisZeroLine(const Handle(AIS_InteractiveContext)& theContext)
+{
+    if (theContext.IsNull())
+    {
+        std::cerr << "Interactive context is not initialized." << std::endl;
+        return;
+    }
+
+    // Define a point on the line (origin)
+    gp_Pnt aPnt(0.0, 0.0, 0.0); // Origin
+
+    // Define the direction of the line
+    gp_Dir aDir(1.0, 0.0, 0.0); // Direction along the X-axis
+
+    // Create an infinite line using the point and direction
+    Handle(Geom_Line) aGeomLine = new Geom_Line(aPnt, aDir);
+
+    // Create an AIS_Line object for visualization
+    Handle(AIS_Line) aisLine = new AIS_Line(aGeomLine);
+
+    // Set the color of the line to red
+    aisLine->SetColor(Quantity_NOC_RED);
+
+    // Display the line in the viewer
+    theContext->Display(aisLine, Standard_True);
+
+    // Optionally, make the line unselectable (as discussed earlier)
+    theContext->Deactivate(aisLine);
+}
+
+// ================================================================
+// Function : AddYAxisZeroLine
+// Purpose  : Create a green Y axis line at X = 0, Z = 0
+// ================================================================
+void OcctQtViewer::AddYAxisZeroLine(const Handle(AIS_InteractiveContext)& theContext)
+{
+    if (theContext.IsNull())
+    {
+        std::cerr << "Interactive context is not initialized." << std::endl;
+        return;
+    }
+
+    // Define a point on the line (origin)
+    gp_Pnt aPnt(0.0, 0.0, 0.0); // Origin
+
+    // Define the direction of the line
+    gp_Dir aDir(0.0, 1.0, 0.0); // Direction along the X-axis
+
+    // Create an infinite line using the point and direction
+    Handle(Geom_Line) aGeomLine = new Geom_Line(aPnt, aDir);
+
+    // Create an AIS_Line object for visualization
+    Handle(AIS_Line) aisLine = new AIS_Line(aGeomLine);
+
+    // Set the color of the line to red
+    aisLine->SetColor(Quantity_NOC_GREEN);
+
+    // Display the line in the viewer
+    theContext->Display(aisLine, Standard_True);
+
+    // Optionally, make the line unselectable (as discussed earlier)
+    theContext->Deactivate(aisLine);
+}
+// ================================================================
+// Function : AddZAxisZeroLine
+// Purpose  : Create a short Blue Z axis line at Y = 0, X = 0
+// ================================================================
+void OcctQtViewer::AddZAxisZeroLine(const Handle(AIS_InteractiveContext)& theContext)
+{
+    if (theContext.IsNull())
+    {
+        std::cerr << "Interactive context is not initialized." << std::endl;
+        return;
+    }
+
+    // Define the start and end points of the line along the X-axis
+    gp_Pnt aPnt1(0.0, 0.0, 0.0); // Start point 
+    gp_Pnt aPnt2(0.0, 0.0, 25.0);  // End point 
+
+    // Create a line between the two points
+    Handle(Geom_CartesianPoint) aP1 = new Geom_CartesianPoint(aPnt1);
+    Handle(Geom_CartesianPoint) aP2 = new Geom_CartesianPoint(aPnt2);
+    Handle(AIS_Line) aisLine = new AIS_Line(aP1, aP2);
+
+    // Set the color of the line to red
+    aisLine->SetColor(Quantity_NOC_BLUE);
+
+    // Display the line in the viewer
+    theContext->Display(aisLine, Standard_True);
+
+    // Optionally, make the line unselectable (as discussed earlier)
+    theContext->Deactivate(aisLine);
 }
 
 // ================================================================

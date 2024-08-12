@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QOpenGLWidget>
 #include <QVBoxLayout>
+#include <QLabel>
 #include "OcctQtViewer.h"
 #include "ui_extrusionwizard.h"
 
@@ -15,10 +16,20 @@ public:
     explicit ExtrusionWizard(QWidget* parent = nullptr);
     ~ExtrusionWizard();
 
+protected:
+    void showEvent(QShowEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+
+private slots:
+    void updatePositionLabels(double x, double y, double z);
+
 private:
     Ui::ExtrusionWizardClass ui; // UI object
     OcctQtViewer* occtViewer = nullptr; // OCCT viewer
     void initializeOcctViewer(); // Function to initialize OCCT viewer
+    void updateViewerGeometry(); // Function to update viewer geometry
+    void printDebugInfo() const;
+    
 };
 
 #endif // EXTRUSIONWIZARD_H
