@@ -18,7 +18,10 @@ ExtrusionWizard::ExtrusionWizard(QWidget* parent)
 	connect(ui.buttonToggleGrid, &QPushButton::clicked, this, &ExtrusionWizard::toggleGrid);
 	connect(ui.buttonDumpGL, &QPushButton::clicked, this, &ExtrusionWizard::dumpGlInfo);
 	connect(ui.toggleFPS, &QPushButton::clicked, this, &ExtrusionWizard::toggleFPS);
-	
+
+	connect(ui.sizeSlider, &QSlider::valueChanged, this, &ExtrusionWizard::onSizeSliderValueChanged);
+
+
 	// Connect the mouse position changed signal to the updatePositionLabels slot
 	connect(occtViewer, &OcctQtViewer::mousePositionChanged,
 		this, &ExtrusionWizard::updatePositionLabels);
@@ -98,26 +101,18 @@ void ExtrusionWizard::printDebugInfo() const
 
 void ExtrusionWizard::changeToMM()
 {
-	if (occtViewer)
-	{
-		occtViewer->changeToMM();  // Directly call the slot in OcctQtViewer
-	}
+	gridType = MM;
 }
 
 void ExtrusionWizard::changeToInch()
 {
-	if (occtViewer)
-	{
-		occtViewer->changeToMM();  // Directly call the slot in OcctQtViewer
-	}
+	gridType = INCH;
 }
+
 
 void ExtrusionWizard::changeToFeet()
 {
-	if (occtViewer)
-	{
-		occtViewer->changeToMM();  // Directly call the slot in OcctQtViewer
-	}
+	gridType = FEET;
 }
 
 void ExtrusionWizard::toggleXLine()
@@ -132,7 +127,7 @@ void ExtrusionWizard::toggleYLine()
 {
 	if (occtViewer)
 	{
-		occtViewer->changeToMM();  // Directly call the slot in OcctQtViewer
+		occtViewer->toggleYLine();  // Directly call the slot in OcctQtViewer
 	}
 }
 
@@ -140,7 +135,7 @@ void ExtrusionWizard::toggleZLine()
 {
 	if (occtViewer)
 	{
-		occtViewer->changeToMM();  // Directly call the slot in OcctQtViewer
+		occtViewer->toggleZLine();  // Directly call the slot in OcctQtViewer
 	}
 }
 
@@ -171,10 +166,33 @@ void ExtrusionWizard::toggleFPS()
 
 void ExtrusionWizard::updatePositionLabels(double x, double y, double z)
 {
-	ui.xposlabel->setText(QString::number(x));
-	ui.yposlabel->setText(QString::number(y));
-	ui.zposlabel->setText(QString::number(z));
+	// Switch case to change the displayed values based on the grid type
+	switch (gridType)
+	{
+	case MM:
+		ui.xposlabel->setText(QString("X: ") + QString::number(x) + " (mm)");
+		ui.yposlabel->setText(QString("Y: ") + QString::number(y) + " (mm)");
+		ui.zposlabel->setText(QString("Z: ") + QString::number(z) + " (mm)");
+		break;
+	case INCH:
+		ui.xposlabel->setText(QString("X: ") + QString::number(x / 25.4, 'f', 3) + " (in)");
+		ui.yposlabel->setText(QString("Y: ") + QString::number(y / 25.4, 'f', 3) + " (in)");
+		ui.zposlabel->setText(QString("Z: ") + QString::number(z / 25.4, 'f', 3) + " (in)");
+		break;
+	case FEET:
+		ui.xposlabel->setText(QString("X: ") + QString::number(x / 304.8, 'f', 3) + " (ft)");
+		ui.yposlabel->setText(QString("Y: ") + QString::number(y / 304.8, 'f', 3) + " (ft)");
+		ui.zposlabel->setText(QString("Z: ") + QString::number(z / 304.8, 'f', 3) + " (ft)");
+		break;
+	default:
+		// Handle unexpected grid type
+		ui.xposlabel->setText("X: N/A");
+		ui.yposlabel->setText("Y: N/A");
+		ui.zposlabel->setText("Z: N/A");
+		break;
+	}
 }
+
 
 
 
@@ -191,3 +209,10 @@ void ExtrusionWizard::resizeEvent(QResizeEvent* event)
 }
 
 
+void ExtrusionWizard::onSizeSliderValueChanged(int value)
+{
+	// Convert the slider value to a suitable grid size
+	double gridSize = static_cast<double>(value); // or apply any scaling factor you need
+
+	
+}

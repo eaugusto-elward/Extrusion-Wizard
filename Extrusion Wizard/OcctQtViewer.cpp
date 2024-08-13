@@ -245,7 +245,7 @@ OcctQtViewer::OcctQtViewer(QWidget* theParent)
 	myViewer->SetDefaultLights();                           // Set the default lights
 	myViewer->SetLightOn();                                 // Turn the lights on
 	createBasicGrid();										// Create a basic grid for the viewer
-
+	
 
 
 
@@ -657,16 +657,16 @@ void OcctQtViewer::AddXAxisZeroLine(const Handle(AIS_InteractiveContext)& theCon
 
 	// Create an AIS_Line object for visualization
 	//Handle(AIS_Line) aisLine = new AIS_Line(aGeomLine);
-	myYAxisZeroLine = new AIS_Line(aGeomLine);
+	myXAxisZeroLine = new AIS_Line(aGeomLine);
 
 	// Set the color of the line to red
-	myYAxisZeroLine->SetColor(Quantity_NOC_RED);
+	myXAxisZeroLine->SetColor(Quantity_NOC_RED);
 
 	// Display the line in the viewer
-	theContext->Display(myYAxisZeroLine, Standard_True);
+	theContext->Display(myXAxisZeroLine, Standard_True);
 
 	// Optionally, make the line unselectable (as discussed earlier)
-	theContext->Deactivate(myYAxisZeroLine);
+	theContext->Deactivate(myXAxisZeroLine);
 
 
 
@@ -694,17 +694,17 @@ void OcctQtViewer::AddYAxisZeroLine(const Handle(AIS_InteractiveContext)& theCon
 	Handle(Geom_Line) aGeomLine = new Geom_Line(aPnt, aDir);
 
 	// Create an AIS_Line object for visualization
-	Handle(AIS_Line) aisLine = new AIS_Line(aGeomLine);
+	myYAxisZeroLine = new AIS_Line(aGeomLine);
 
 	// Set the color of the line to red
-	aisLine->SetColor(Quantity_NOC_GREEN);
+	myYAxisZeroLine->SetColor(Quantity_NOC_GREEN);
 
 
 	// Display the line in the viewer
-	theContext->Display(aisLine, Standard_True);
+	theContext->Display(myYAxisZeroLine, Standard_True);
 
 	// Optionally, make the line unselectable (as discussed earlier)
-	theContext->Deactivate(aisLine);
+	theContext->Deactivate(myYAxisZeroLine);
 
 }
 // ================================================================
@@ -726,16 +726,16 @@ void OcctQtViewer::AddZAxisZeroLine(const Handle(AIS_InteractiveContext)& theCon
 	// Create a line between the two points
 	Handle(Geom_CartesianPoint) aP1 = new Geom_CartesianPoint(aPnt1);
 	Handle(Geom_CartesianPoint) aP2 = new Geom_CartesianPoint(aPnt2);
-	Handle(AIS_Line) aisLine = new AIS_Line(aP1, aP2);
+	myZAxisZeroLine = new AIS_Line(aP1, aP2);
 
 	// Set the color of the line to red
-	aisLine->SetColor(Quantity_NOC_BLUE);
+	myZAxisZeroLine->SetColor(Quantity_NOC_BLUE);
 
 	// Display the line in the viewer
-	theContext->Display(aisLine, Standard_True);
+	theContext->Display(myZAxisZeroLine, Standard_True);
 
 	// Optionally, make the line unselectable (as discussed earlier)
-	theContext->Deactivate(aisLine);
+	theContext->Deactivate(myZAxisZeroLine);
 }
 
 
@@ -762,7 +762,7 @@ void OcctQtViewer::setGeometryInfo(const QRect& rect)
 // Implementation for changing the grid to millimeters
 void OcctQtViewer::changeToMM()
 {
-	myViewer->DeactivateGrid(); // Deactivate the grid
+	
 	update(); // Request an update
 	myView->Redraw(); // Redraw the view
 }
@@ -770,25 +770,13 @@ void OcctQtViewer::changeToMM()
 // Implementation for changing the grid to inches
 void OcctQtViewer::changeToInch()
 {
-	//if (!myGrid.IsNull())
-	//{
-	//    // Set grid spacing for inches (example values)
-	//    myGrid->SetGridEcho(true);
-	//    myGrid->SetRectangularGridValues(25.4, 25.4, 0.0, 0.0, 0.0); // X, Y spacing in inches (1 inch = 25.4 mm)
-	//    myGrid->Redraw();
-	//}
+
 }
 
 // Implementation for changing the grid to feet
 void OcctQtViewer::changeToFeet()
 {
-	//if (!myGrid.IsNull())
-	//{
-	//    // Set grid spacing for feet (example values)
-	//    myGrid->SetGridEcho(true);
-	//    myGrid->SetRectangularGridValues(304.8, 304.8, 0.0, 0.0, 0.0); // X, Y spacing in feet (1 foot = 304.8 mm)
-	//    myGrid->Redraw();
-	//}
+	
 }
 
 void OcctQtViewer::toggleXLine()
@@ -827,15 +815,15 @@ void OcctQtViewer::toggleYLine()
 
 void OcctQtViewer::toggleZLine()
 {
-	if (!myYAxisZeroLine.IsNull())
+	if (!myZAxisZeroLine.IsNull())
 	{
-		if (myContext->IsDisplayed(myYAxisZeroLine))
+		if (myContext->IsDisplayed(myZAxisZeroLine))
 		{
-			myContext->Erase(myYAxisZeroLine, Standard_True); // Hide the line
+			myContext->Erase(myZAxisZeroLine, Standard_True); // Hide the line
 		}
 		else
 		{
-			myContext->Display(myYAxisZeroLine, Standard_True); // Show the line
+			myContext->Display(myZAxisZeroLine, Standard_True); // Show the line
 		}
 		update();
 		myView->Redraw(); // Redraw the view to apply changes
@@ -884,6 +872,7 @@ void OcctQtViewer::createBasicGrid()
 	if (grid == myViewer->Grid())
 	{
 		grid->SetColors(Quantity_NOC_MATRAGRAY, Quantity_NOC_BLACK); // Set grid colors
+	
 		grid->Activate(); // Activate the grid
 		myGrid = grid; // Store the grid handle for future use if needed
 	}

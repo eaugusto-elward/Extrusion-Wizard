@@ -45,16 +45,6 @@
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="2" column="1">
-        <widget class="QPushButton" name="buttonToMM">
-         <property name="text">
-          <string>Change to mm</string>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="3">
         <widget class="QLabel" name="zposlabel">
          <property name="sizePolicy">
@@ -68,10 +58,30 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QPushButton" name="buttonToggleGrid">
+       <item row="0" column="1">
+        <widget class="QLabel" name="xposlabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
-          <string>Toggle Grid</string>
+          <string>xposlabel</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QPushButton" name="buttonToggleZ">
+         <property name="text">
+          <string>ToggleZ</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QPushButton" name="toggleFPS">
+         <property name="text">
+          <string>Toggle FPS</string>
          </property>
         </widget>
        </item>
@@ -88,23 +98,47 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="3">
-        <widget class="QPushButton" name="buttonToggleZ">
+       <item row="2" column="1">
+        <widget class="QPushButton" name="buttonToMM">
          <property name="text">
-          <string>ToggleZ</string>
+          <string>Change to mm</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="xposlabel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="buttonToggleGrid">
          <property name="text">
-          <string>xposlabel</string>
+          <string>Toggle Grid</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="3">
+        <widget class="QPushButton" name="buttonToFeet">
+         <property name="text">
+          <string>Change to ft.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="buttonToggleY">
+         <property name="text">
+          <string>ToggleY</string>
          </property>
         </widget>
        </item>
@@ -122,33 +156,6 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="3">
-        <widget class="QPushButton" name="buttonToFeet">
-         <property name="text">
-          <string>Change to ft.</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QPushButton" name="buttonToggleY">
-         <property name="text">
-          <string>ToggleY</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
        <item row="4" column="2">
         <widget class="QPushButton" name="buttonDumpGL">
          <property name="text">
@@ -156,10 +163,22 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="3">
-        <widget class="QPushButton" name="toggleFPS">
-         <property name="text">
-          <string>Toggle FPS</string>
+       <item row="5" column="1" colspan="3">
+        <widget class="QSlider" name="sizeSlider">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>2</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimum">
+          <number>500</number>
+         </property>
+         <property name="maximum">
+          <number>50000</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -205,7 +224,7 @@
      <x>0</x>
      <y>0</y>
      <width>1047</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -5,8 +5,10 @@
 #include <QOpenGLWidget>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QString>
 #include "OcctQtViewer.h"
 #include "ui_extrusionwizard.h"
+
 
 class ExtrusionWizard : public QMainWindow
 {
@@ -22,6 +24,7 @@ protected:
 
 private slots:
     void updatePositionLabels(double x, double y, double z);
+    void onSizeSliderValueChanged(int value);
 
 private:
     Ui::ExtrusionWizardClass ui; // UI object
@@ -41,6 +44,10 @@ private:
     void toggleGrid();
     void dumpGlInfo();
     void toggleFPS();
+
+    enum GridType { MM, INCH, FEET };
+    GridType gridType = MM;
+
 };
 
 #endif // EXTRUSIONWIZARD_H

@@ -131,7 +131,11 @@ private:
 
 
 
-private:
+
+
+public:
+	
+
 	Handle(V3d_Viewer)             myViewer;
 	Handle(V3d_View)               myView;
 	Handle(AIS_InteractiveContext) myContext;
@@ -141,6 +145,7 @@ private:
 
 	Handle(Aspect_Grid) myGrid;
 
+private:
 	Handle(AIS_Line) myXAxisZeroLine;
 	Handle(AIS_Line) myYAxisZeroLine;
 	Handle(AIS_Line) myZAxisZeroLine;
@@ -153,8 +158,8 @@ private:
 	double gridX, gridY, gridZ;
 	bool xLineison, yLineison, zLineison = true;
 	bool gridIsOn = true;
-	enum GridType { MM, INCH, FEET };
-	GridType gridType = MM;
+	/*enum GridType { MM, INCH, FEET };
+	GridType gridType = MM;*/
 	
 
 };
