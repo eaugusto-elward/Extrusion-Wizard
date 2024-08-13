@@ -30,6 +30,17 @@ private:
     void updateViewerGeometry(); // Function to update viewer geometry
     void printDebugInfo() const;
     
+
+    void changeToMM();
+    void changeToInch();
+    void changeToFeet();
+
+    void toggleXLine();
+    void toggleYLine();
+    void toggleZLine();
+    void toggleGrid();
+    void dumpGlInfo();
+    void toggleFPS();
 };
 
 #endif // EXTRUSIONWIZARD_H

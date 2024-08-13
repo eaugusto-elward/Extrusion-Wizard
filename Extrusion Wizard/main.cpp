@@ -29,6 +29,8 @@ int main(int theNbArgs, char** theArgVec)
 {
     QApplication aQApp(theNbArgs, theArgVec); // Initialize the Qt application with command-line arguments
 
+    QCoreApplication::setApplicationVersion(OCC_VERSION_STRING_EXT);
+
     ExtrusionWizard mainWindow;
     //mainWindow.resize(mainWindow.sizeHint());
     mainWindow.show();
